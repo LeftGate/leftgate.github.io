@@ -136,21 +136,51 @@ class LeftGateApp {
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        // Simulate API call
-        setTimeout(() => {
-            // Reset button
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
+        // Google Form submission
+        this.submitToGoogleForm(data)
+            .then(() => {
+                // Reset button
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
 
-            // Reset form
-            document.getElementById('contactForm').reset();
+                // Reset form
+                document.getElementById('contactForm').reset();
 
-            // Show success message
-            this.showSuccessMessage();
+                // Show success message
+                this.showSuccessMessage();
+            })
+            .catch((error) => {
+                console.error('Form submission error:', error);
+                
+                // Reset button
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
 
-            // Log submission data (in real app, this would be sent to server)
-            console.log('Contact form submitted:', data);
-        }, 1500);
+                // Show error message
+                this.showError('There was an error submitting your message. Please try again or contact us directly at sales@leftgate.in');
+            });
+    }
+
+    submitToGoogleForm(data) {
+        // Your Google Form submission URL
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfk5Myf3NOiVWDJr-VyqxNWea4iDjREwKU4IJ5lEtdSBSgHHw/formResponse';
+        
+        // Google Form field IDs from your LeftGate Interest Form
+        const formData = new FormData();
+        formData.append('entry.104934318', data.name || '');       // Full Name
+        formData.append('entry.106012874', data.company || '');    // Company
+        formData.append('entry.165502500', data.email || '');      // Email Address
+        formData.append('entry.620309715', data.mobile || '');     // Mobile Number
+        formData.append('entry.108892764', data.teamSize || '');   // Team Size
+        formData.append('entry.18201374', data.vcs || '');         // Version Control System
+        formData.append('entry.142378224', data.message || '');    // Message
+
+        // Submit to Google Form using fetch with no-cors mode
+        return fetch(GOOGLE_FORM_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
     }
 
     showSuccessMessage() {
