@@ -17,15 +17,15 @@ class LeftGateApp {
         const pages = document.querySelectorAll('.page');
 
         navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // Skip adding event listener for external links
+            if (href.startsWith('http')) {
+                return; // Let the browser handle external links naturally
+            }
+            
+            // Add event listener only for internal navigation
             link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                
-                // If it's an external link (starts with http), don't prevent default
-                if (href.startsWith('http')) {
-                    return; // Let the browser handle the external link
-                }
-                
-                // Handle internal page navigation
                 e.preventDefault();
                 const targetPage = href.substring(1);
                 this.showPage(targetPage);
@@ -59,6 +59,12 @@ class LeftGateApp {
         const targetPage = document.getElementById(pageId);
 
         if (!targetPage) return;
+
+        // If trying to show contact page, redirect to Calendly instead
+        if (pageId === 'contact') {
+            window.open('https://calendly.com/leftgate-secure/30min', '_blank');
+            return;
+        }
 
         // Hide all pages
         pages.forEach(page => {
@@ -94,14 +100,8 @@ class LeftGateApp {
     }
 
     setupContactForm() {
-        const contactForm = document.getElementById('contactForm');
-        
-        if (contactForm) {
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleContactSubmission(contactForm);
-            });
-        }
+        // Contact form removed - now redirects directly to Calendly
+        // Keeping this method for backward compatibility
     }
 
     handleContactSubmission(form) {
