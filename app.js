@@ -146,7 +146,7 @@ class LeftGateApp {
                 // Reset form
                 document.getElementById('contactForm').reset();
 
-                // Show success message
+                // Show success message with note about new tab
                 this.showSuccessMessage();
             })
             .catch((error) => {
@@ -157,30 +157,31 @@ class LeftGateApp {
                 submitButton.disabled = false;
 
                 // Show error message
-                this.showError('There was an error submitting your message. Please try again or contact us directly at sales@leftgate.in');
+                this.showError('There was an error opening the form. Please try again or contact us directly at sales@leftgate.in');
             });
     }
 
     submitToGoogleForm(data) {
-        // Your Google Form submission URL
-        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfk5Myf3NOiVWDJr-VyqxNWea4iDjREwKU4IJ5lEtdSBSgHHw/formResponse';
+        // Use the pre-filled URL approach which is most reliable for Google Forms
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfk5Myf3NOiVWDJr-VyqxNWea4iDjREwKU4IJ5lEtdSBSgHHw/viewform';
         
-        // Google Form field IDs from your LeftGate Interest Form
-        const formData = new FormData();
-        formData.append('entry.104934318', data.name || '');       // Full Name
-        formData.append('entry.106012874', data.company || '');    // Company
-        formData.append('entry.165502500', data.email || '');      // Email Address
-        formData.append('entry.620309715', data.mobile || '');     // Mobile Number
-        formData.append('entry.108892764', data.teamSize || '');   // Team Size
-        formData.append('entry.18201374', data.vcs || '');         // Version Control System
-        formData.append('entry.142378224', data.message || '');    // Message
-
-        // Submit to Google Form using fetch with no-cors mode
-        return fetch(GOOGLE_FORM_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        });
+        // Build URL with pre-filled parameters
+        const params = new URLSearchParams();
+        params.append('entry.104934318', data.name || '');       // Full Name
+        params.append('entry.106012874', data.company || '');    // Company
+        params.append('entry.165502500', data.email || '');      // Email Address
+        params.append('entry.620309715', data.mobile || '');     // Mobile Number
+        params.append('entry.108892764', data.teamSize || '');   // Team Size
+        params.append('entry.18201374', data.vcs || '');         // Version Control System
+        params.append('entry.142378224', data.message || '');    // Message
+        
+        const prefilledURL = `${GOOGLE_FORM_URL}?${params.toString()}`;
+        
+        // Open in new tab
+        window.open(prefilledURL, '_blank');
+        
+        // Return resolved promise since we're opening in new tab
+        return Promise.resolve();
     }
 
     showSuccessMessage() {
