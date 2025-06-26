@@ -18,8 +18,16 @@ class LeftGateApp {
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                
+                // If it's an external link (starts with http), don't prevent default
+                if (href.startsWith('http')) {
+                    return; // Let the browser handle the external link
+                }
+                
+                // Handle internal page navigation
                 e.preventDefault();
-                const targetPage = link.getAttribute('href').substring(1);
+                const targetPage = href.substring(1);
                 this.showPage(targetPage);
                 this.updateActiveNavLink(link);
             });
@@ -136,51 +144,24 @@ class LeftGateApp {
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        // Google Form submission
-        this.submitToGoogleForm(data)
-            .then(() => {
-                // Reset button
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-
-                // Reset form
-                document.getElementById('contactForm').reset();
-
-                // Show success message with note about new tab
-                this.showSuccessMessage();
-            })
-            .catch((error) => {
-                console.error('Form submission error:', error);
-                
-                // Reset button
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-
-                // Show error message
-                this.showError('There was an error opening the form. Please try again or contact us directly at sales@leftgate.in');
-            });
+        // Redirect to Calendly for booking
+        this.redirectToCalendly(data);
     }
 
-    submitToGoogleForm(data) {
-        // Use the pre-filled URL approach which is most reliable for Google Forms
-        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfk5Myf3NOiVWDJr-VyqxNWea4iDjREwKU4IJ5lEtdSBSgHHw/viewform';
+    redirectToCalendly(data) {
+        // Calendly booking link
+        const calendlyURL = 'https://calendly.com/leftgate-secure/30min';
         
-        // Build URL with pre-filled parameters
+        // Build URL with pre-filled information if Calendly supports it
         const params = new URLSearchParams();
-        params.append('entry.104934318', data.name || '');       // Full Name
-        params.append('entry.106012874', data.company || '');    // Company
-        params.append('entry.165502500', data.email || '');      // Email Address
-        params.append('entry.620309715', data.mobile || '');     // Mobile Number
-        params.append('entry.108892764', data.teamSize || '');   // Team Size
-        params.append('entry.18201374', data.vcs || '');         // Version Control System
-        params.append('entry.142378224', data.message || '');    // Message
+        if (data.name) params.append('name', data.name);
+        if (data.email) params.append('email', data.email);
         
-        const prefilledURL = `${GOOGLE_FORM_URL}?${params.toString()}`;
+        const finalURL = params.toString() ? `${calendlyURL}?${params.toString()}` : calendlyURL;
         
-        // Open in new tab
-        window.open(prefilledURL, '_blank');
+        // Open Calendly in the same tab
+        window.location.href = finalURL;
         
-        // Return resolved promise since we're opening in new tab
         return Promise.resolve();
     }
 

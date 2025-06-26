@@ -875,10 +875,11 @@ p {
   margin-right: 12px;
   vertical-align: middle;
   opacity: 2;
-  transition: all 0.3s ease;
+  animation: pushLeft 2s ease-in-out infinite;
 }
 
 .logo-icon:hover {
+  animation-play-state: paused;
   transform: scale(1.1);
   opacity: 0.8;
 }
@@ -2139,4 +2140,24 @@ select.form-control {
     grid-template-columns: 1fr;
     gap: var(--space-16);
   }
+}
+
+/* Elegant LeftGate icon with left-pushing animation */
+.leftgate-icon {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: -2px;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pushLeft 2s ease-in-out infinite;
+}
+
+@keyframes pushLeft {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-3px);
+    }
 }
